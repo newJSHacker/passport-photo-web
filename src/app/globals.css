@@ -1,0 +1,133 @@
+@import "tailwindcss";
+
+@theme {
+  --color-navy: #333333;
+  --color-brand: #02aaea;
+  --color-brand-dark: #04a1dc;
+  --color-brand-light: #69def9;
+  --color-brand-muted: #85d1ff;
+  --color-grey: #666666;
+  --color-muted: #999999;
+  --color-section: #f9f9f9;
+  --color-page: #fafafa;
+  --color-border: #e5e5e5;
+
+  --radius-btn: 5px;
+  --radius-lg: 0.5rem;
+  --radius-md: calc(0.5rem - 2px);
+  --radius-sm: calc(0.5rem - 4px);
+
+  --font-sans: Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-serif: "PT Serif", Georgia, "Times New Roman", serif;
+
+  --shadow-nav: 0 0 6px rgba(0, 0, 0, 0.2);
+  --shadow-photo: 0 4px 24px rgba(0, 0, 0, 0.1);
+}
+
+:root {
+  --background: #ffffff;
+  --foreground: #333333;
+  --primary: #02aaea;
+  --primary-foreground: #ffffff;
+  --muted: #f9f9f9;
+  --muted-foreground: #666666;
+  --border: #e5e5e5;
+  --ring: #02aaea;
+  --radius: 0.5rem;
+}
+
+@layer base {
+  * {
+    @apply box-border border-border;
+  }
+
+  body {
+    @apply overflow-x-hidden antialiased;
+    color: var(--foreground);
+    background-color: var(--background);
+    font-size: 14px;
+    line-height: 1.5;
+    font-weight: 400;
+    font-family: var(--font-sans);
+  }
+
+  h1,
+  h2 {
+    @apply m-0 font-bold text-navy;
+    font-family: var(--font-serif);
+  }
+
+  p {
+    @apply m-0;
+  }
+
+  ul {
+    @apply list-none p-0 m-0;
+  }
+}
+
+@layer components {
+  .container-main {
+    @apply mx-auto w-full max-w-[1380px] px-[18px];
+  }
+
+  .typography-h1 {
+    font-family: var(--font-serif);
+    font-size: 2.5rem;
+    line-height: 2.875rem;
+    font-weight: 700;
+    letter-spacing: -0.0625rem;
+    color: var(--color-navy);
+  }
+
+  @media (min-width: 769px) {
+    .typography-h1 {
+      font-size: 4.5rem;
+      line-height: 5rem;
+      letter-spacing: -0.15rem;
+    }
+  }
+
+  .typography-h2 {
+    font-family: var(--font-serif);
+    font-size: 2rem;
+    line-height: 2.375rem;
+    font-weight: 700;
+    letter-spacing: -0.0375rem;
+    color: var(--color-navy);
+  }
+
+  @media (min-width: 769px) {
+    .typography-h2 {
+      font-size: 3rem;
+      line-height: 3.375rem;
+      letter-spacing: -0.1125rem;
+    }
+  }
+
+  .typography-h3 {
+    font-family: var(--font-serif);
+    font-size: 1.5rem;
+    line-height: 1.875rem;
+    font-weight: 700;
+    letter-spacing: -0.03rem;
+    color: var(--color-navy);
+  }
+
+  .section-padding {
+    @apply py-14 md:py-16;
+  }
+
+  .content-list li {
+    @apply relative mb-6 pl-9 text-base font-light leading-7 text-grey;
+  }
+
+  .content-list li::before {
+    content: "•";
+    @apply absolute left-0 text-2xl leading-none text-brand;
+  }
+
+  .faq-item {
+    @apply border-b border-[#e5e5e5];
+  }
+}
