@@ -172,3 +172,71 @@ export function photoFileUrl(path: string | null): string | null {
   const backendPath = path.replace("/api/v1", "/api/backend");
   return `${webOrigin}${backendPath}`;
 }
+
+export interface CheckoutPricingOption {
+  id: "digital" | "print";
+  title: string;
+  description: string;
+  amount_cents: number;
+  currency: string;
+}
+
+export interface CheckoutPricing {
+  options: CheckoutPricingOption[];
+}
+
+export interface CreateCheckoutSessionPayload {
+  photo_job_id: string;
+  email: string;
+  delivery_type: "digital" | "print";
+  print_copies?: 2 | 4 | 6;
+  addons?: ("expert_check" | "photo_retouching")[];
+}
+
+export interface CreateCheckoutSessionResult {
+  order_id: string;
+  checkout_url: string;
+  demo_mode: boolean;
+}
+
+export interface Order {
+  id: string;
+  photo_job_id: string;
+  email: string;
+  delivery_type: string;
+  amount_cents: number;
+  currency: string;
+  status: string;
+  created_at: string;
+  paid_at: string | null;
+  download_url: string | null;
+}
+
+export async function fetchCheckoutPricing(): Promise<CheckoutPricing> {
+  return request<CheckoutPricing>("/checkout/pricing");
+}
+
+export async function createCheckoutSession(
+  payload: CreateCheckoutSessionPayload,
+): Promise<CreateCheckoutSessionResult> {
+  return request<CreateCheckoutSessionResult>("/checkout/sessions", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function getOrder(orderId: string): Promise<Order> {
+  return request<Order>(`/checkout/orders/${orderId}`);
+}
+
+export async function getOrderBySession(sessionId: string): Promise<Order> {
+  return request<Order>(`/checkout/orders/by-session/${sessionId}`);
+}
+
+export function formatPrice(amountCents: number, currency: string): string {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: currency.toUpperCase(),
+  }).format(amountCents / 100);
+}

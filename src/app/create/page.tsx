@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { Check, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -64,6 +65,7 @@ async function runProcessingAnimation(
 }
 
 export default function CreatePage() {
+  const router = useRouter();
   const inputRef = useRef<HTMLInputElement>(null);
   const [documents, setDocuments] = useState<DocumentSpec[]>([]);
   const [selectedDocumentDetail, setSelectedDocumentDetail] =
@@ -548,6 +550,10 @@ export default function CreatePage() {
               <Button
                 type="button"
                 className="h-[52px] min-w-[240px] flex-1 bg-[#4e4bdc] text-base hover:bg-[#3f3ac6] sm:flex-none"
+                disabled={!job}
+                onClick={() => {
+                  if (job) router.push(`/checkout?job=${job.id}`);
+                }}
               >
                 Proceed to checkout
               </Button>
