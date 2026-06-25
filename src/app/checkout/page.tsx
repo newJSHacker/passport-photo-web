@@ -27,6 +27,7 @@ import {
   type DocumentSpecDetail,
   type PhotoJob,
 } from "@/lib/api";
+import { saveCheckoutOrder } from "@/lib/checkout-storage";
 
 type CheckoutStep = 1 | 2 | 3;
 
@@ -163,6 +164,12 @@ function CheckoutPageContent() {
         delivery_type: deliveryType,
         print_copies: deliveryType === "print" ? printCopies : undefined,
         addons: Array.from(selectedAddons),
+      });
+      saveCheckoutOrder({
+        order_id: result.order_id,
+        photo_job_id: result.photo_job_id ?? activeJobId,
+        email: result.email ?? email.trim(),
+        demo_mode: result.demo_mode,
       });
       window.location.href = result.checkout_url;
     } catch (err) {

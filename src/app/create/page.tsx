@@ -27,6 +27,8 @@ import {
 
 type Step = "document" | "processing" | "result";
 
+const DEFAULT_DOCUMENT_ID = "us-passport";
+
 const PROCESSING_STEPS = ["Cropping", "Background removing", "Resizing", "Analyzing"];
 const STEP_DELAY_MS = 1500;
 
@@ -108,7 +110,13 @@ export default function CreatePage() {
     fetchDocuments()
       .then((loadedDocuments) => {
         setDocuments(loadedDocuments);
-        setSelectedDocumentId((current) => current ?? loadedDocuments[0]?.id ?? null);
+        setSelectedDocumentId((current) => {
+          if (current) return current;
+          const preferred = loadedDocuments.find(
+            (document) => document.id === DEFAULT_DOCUMENT_ID,
+          );
+          return preferred?.id ?? loadedDocuments[0]?.id ?? null;
+        });
       })
       .catch(() => setError("Could not load document types. Is the API running?"));
   }, []);

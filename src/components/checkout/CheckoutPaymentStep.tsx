@@ -1,8 +1,15 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { formatPrice } from "@/lib/api";
+import {
+  CHECKOUT_TEST_CARD_CVV,
+  CHECKOUT_TEST_CARD_EXPIRY,
+  CHECKOUT_TEST_CARD_NUMBER,
+  CHECKOUT_TEST_EMAIL,
+  isCheckoutTestPrefillEnabled,
+} from "@/lib/checkout-test-data";
 
 export type PaymentMethod = "card" | "paypal" | "google_pay";
 
@@ -33,11 +40,25 @@ export function CheckoutPaymentStep({
   error,
   onPay,
 }: CheckoutPaymentStepProps) {
-  const [termsAccepted, setTermsAccepted] = useState(false);
+  const testPrefill = isCheckoutTestPrefillEnabled();
+  const prefillApplied = useRef(false);
+  const [termsAccepted, setTermsAccepted] = useState(testPrefill);
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("card");
-  const [cardNumber, setCardNumber] = useState("");
-  const [expiry, setExpiry] = useState("");
-  const [cvv, setCvv] = useState("");
+  const [cardNumber, setCardNumber] = useState(
+    testPrefill ? CHECKOUT_TEST_CARD_NUMBER : "",
+  );
+  const [expiry, setExpiry] = useState(
+    testPrefill ? CHECKOUT_TEST_CARD_EXPIRY : "",
+  );
+  const [cvv, setCvv] = useState(testPrefill ? CHECKOUT_TEST_CARD_CVV : "");
+
+  useEffect(() => {
+    if (!testPrefill || prefillApplied.current) return;
+    prefillApplied.current = true;
+    if (!email.trim()) {
+      onEmailChange(CHECKOUT_TEST_EMAIL);
+    }
+  }, [testPrefill, email, onEmailChange]);
 
   const cardFieldsValid = useMemo(() => {
     if (paymentMethod !== "card") return true;
@@ -52,6 +73,12 @@ export function CheckoutPaymentStep({
 
   return (
     <div className="space-y-8">
+      {testPrefill ? (
+        <p className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-2 text-sm text-amber-900">
+          Test mode — form pre-filled with sample email and card details.
+        </p>
+      ) : null}
+
       <section>
         <h2 className="text-xl font-bold text-navy">Enter your email</h2>
         <p className="mt-1 text-sm text-[#666]">

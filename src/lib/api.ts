@@ -68,6 +68,19 @@ function joinApiPath(path: string): string {
   return `${API_BASE}${normalizedPath}`;
 }
 
+function parseApiError(message: string, status: number): string {
+  try {
+    const json = JSON.parse(message) as { detail?: string | { msg: string }[] };
+    if (typeof json.detail === "string") return json.detail;
+    if (Array.isArray(json.detail) && json.detail[0]?.msg) {
+      return json.detail[0].msg;
+    }
+  } catch {
+    // not JSON
+  }
+  return message || `Request failed: ${status}`;
+}
+
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const response = await fetch(joinApiPath(path), {
     ...init,
@@ -78,7 +91,7 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
 
   if (!response.ok) {
     const message = await response.text();
-    throw new Error(message || `Request failed: ${response.status}`);
+    throw new Error(parseApiError(message, response.status));
   }
 
   if (response.status === 204) {
@@ -197,6 +210,8 @@ export interface CreateCheckoutSessionResult {
   order_id: string;
   checkout_url: string;
   demo_mode: boolean;
+  photo_job_id?: string | null;
+  email?: string | null;
 }
 
 export interface Order {
@@ -232,6 +247,10 @@ export async function getOrder(orderId: string): Promise<Order> {
 
 export async function getOrderBySession(sessionId: string): Promise<Order> {
   return request<Order>(`/checkout/orders/by-session/${sessionId}`);
+}
+
+export async function getOrderByJob(photoJobId: string): Promise<Order> {
+  return request<Order>(`/checkout/orders/by-job/${photoJobId}`);
 }
 
 export function formatPrice(amountCents: number, currency: string): string {
