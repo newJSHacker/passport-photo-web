@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
+import { HowToTakePhotoSteps } from "@/components/how-it-works/HowToTakePhotoSteps";
 import { OnlineCmsImage } from "@/components/OnlineCmsImage";
 import {
   howItWorksTabs,
@@ -66,24 +67,8 @@ function TabPanelContent({
     );
   }
 
-  if (tab.steps) {
-    return (
-      <ol className="space-y-5">
-        {tab.steps.map((step) => (
-          <li key={step.number} className="flex gap-4">
-            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#4e4bdc] text-sm font-semibold text-white">
-              {step.number}
-            </span>
-            <div>
-              <h3 className="text-lg font-semibold text-[#222a35]">{step.title}</h3>
-              <p className="mt-1 text-[15px] leading-relaxed text-[#4f5560]">
-                {step.description}
-              </p>
-            </div>
-          </li>
-        ))}
-      </ol>
-    );
+  if (tab.slug === "how-to-take-a-photo" && tab.steps) {
+    return <HowToTakePhotoSteps steps={tab.steps} />;
   }
 
   return (
@@ -225,24 +210,16 @@ export function HowItWorksAccordion({ defaultTab }: HowItWorksAccordionProps) {
               />
             </div>
 
-            {tab.slug === "how-to-take-a-photo" ? (
-              <div className="mt-8 flex justify-center lg:justify-end">
-                <OnlineCmsImage
-                  src={tab.heroImage}
-                  alt={tab.heroImageAlt}
-                  className="max-h-[360px] w-auto max-w-full object-contain"
-                />
+            {tab.slug !== "how-to-take-a-photo" ? (
+              <div className="mt-8 border-t border-[#e3e7ec] pt-6">
+                <Button
+                  asChild
+                  className="h-12 min-w-[200px] bg-[#4e4bdc] hover:bg-[#3f3ac6]"
+                >
+                  <Link href="/create">Choose document</Link>
+                </Button>
               </div>
             ) : null}
-
-            <div className="mt-8 border-t border-[#e3e7ec] pt-6">
-              <Button
-                asChild
-                className="h-12 min-w-[200px] bg-[#4e4bdc] hover:bg-[#3f3ac6]"
-              >
-                <Link href="/create">Choose document</Link>
-              </Button>
-            </div>
           </section>
         </div>
       </div>

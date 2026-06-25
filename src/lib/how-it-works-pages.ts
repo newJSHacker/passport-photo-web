@@ -10,6 +10,8 @@ export interface HowItWorksStep {
   number: number;
   title: string;
   description: string;
+  image: string;
+  imageAlt: string;
 }
 
 export interface HowItWorksSection {
@@ -42,32 +44,40 @@ export const howItWorksTabs: HowItWorksTab[] = [
   {
     slug: "how-to-take-a-photo",
     title: "How to Take a Photo",
-    heroImage: cmsImage("Take_a_picture_54d8c245ef.webp", 560),
-    heroImageAlt: "How to take a passport photo",
+    heroImage: cmsImage("step1big_f22760cb38.png", 560),
+    heroImageAlt: "Position your light",
     steps: [
       {
         number: 1,
         title: "Position your light",
         description:
           "Face a window or another light source. Make sure your face is evenly lit with no shadows on either side.",
+        image: cmsImage("step1big_f22760cb38.png", 560),
+        imageAlt: "Position your light",
       },
       {
         number: 2,
         title: "Position yourself",
         description:
           "If taking a selfie, hold the camera at least 20 inches from your face. Ideally, ask someone to take the photo for you.",
+        image: cmsImage("Take_a_picture_54d8c245ef.webp", 560),
+        imageAlt: "Position yourself",
       },
       {
         number: 3,
         title: "Pose correctly",
         description:
           "Face the camera directly with your head straight—don't tilt, lower, or raise it. Maintain a neutral expression and don't smile broadly.",
+        image: cmsImage("Approved_declined_628e10d628.webp", 560),
+        imageAlt: "Pose correctly",
       },
       {
         number: 4,
         title: "Take a photo!",
         description:
           "Upload the picture and wait 3 seconds—our tool will ensure it meets the official requirements.",
+        image: cmsImage("step4_acb4003443.png", 560),
+        imageAlt: "Take a photo",
       },
     ],
   },

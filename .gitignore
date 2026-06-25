@@ -12,8 +12,11 @@
 *.pem
 npm-debug.log*
 
-# env
-.env*.local
+# env (keep .env.local.example)
+.env
+.env.local
+.env.*.local
+!.env*.example
 
 # vercel
 .vercel

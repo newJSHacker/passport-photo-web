@@ -175,7 +175,7 @@ export default function CreatePage() {
 
   function photoDimensions() {
     if (!activeDocument) {
-      return { width: 2, height: 2, head: 1.23 };
+      return { width: 2, height: 2, head: 1.23, aspectRatio: 1 };
     }
     const { width_px, height_px, dpi } = activeDocument.dimensions;
     const width = Number((width_px / dpi).toFixed(2));
@@ -183,7 +183,12 @@ export default function CreatePage() {
     const headPct =
       selectedDocumentDetail?.head_rules.target_head_height_pct ?? 62;
     const head = Number(((headPct / 100) * height).toFixed(2));
-    return { width, height, head };
+    return {
+      width,
+      height,
+      head,
+      aspectRatio: width_px / height_px,
+    };
   }
 
   const dimensions = photoDimensions();
@@ -486,11 +491,14 @@ export default function CreatePage() {
                         {dimensions.width} in
                       </div>
 
-                      <div className="relative overflow-hidden rounded-sm border border-[#d9dde2] bg-white shadow-[0_18px_40px_rgba(0,0,0,0.08)]">
+                      <div
+                        className="relative overflow-hidden rounded-sm border border-[#d9dde2] bg-white shadow-[0_18px_40px_rgba(0,0,0,0.08)]"
+                        style={{ aspectRatio: dimensions.aspectRatio }}
+                      >
                         <OnlineCmsImage
                           src={resultImage}
                           alt="Processed passport photo"
-                          className="aspect-[4/5] w-full object-cover"
+                          className="h-full w-full object-contain"
                         />
                         <div className="pointer-events-none absolute inset-3 border border-dashed border-white/90" />
                         <div
