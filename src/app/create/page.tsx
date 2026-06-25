@@ -167,11 +167,12 @@ export default function CreatePage() {
 
   const selectedDocument = documents.find((d) => d.id === selectedDocumentId);
   const activeDocument = selectedDocumentDetail ?? selectedDocument ?? null;
-  const processedUrl = photoFileUrl(job?.processed_url ?? null);
+  const previewUrl = photoFileUrl(job?.preview_url ?? null);
+  const resultImage = previewUrl
+    ? `${previewUrl}?v=${encodeURIComponent(job?.created_at ?? job?.id ?? "")}`
+    : null;
   const beforeImage = getCreateBeforeImage(430);
   const afterImage = getCreateAfterImage(selectedDocumentId, 430);
-  const resultImage =
-    processedUrl ?? getCreateResultImage(430);
   const documentCoverImage = getDocumentCoverImage(selectedDocumentId, 160);
 
   function sizeLabel() {
@@ -523,21 +524,18 @@ export default function CreatePage() {
                         className="relative overflow-hidden rounded-sm border border-[#d9dde2] bg-white shadow-[0_18px_40px_rgba(0,0,0,0.08)]"
                         style={{ aspectRatio: dimensions.aspectRatio }}
                       >
-                        <OnlineCmsImage
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
                           src={resultImage}
-                          alt="Processed passport photo"
+                          alt="Processed passport photo preview"
                           className="h-full w-full object-contain"
                         />
-                        <div className="pointer-events-none absolute inset-3 border border-dashed border-white/90" />
                         <div
                           className="pointer-events-none absolute inset-x-3 border-t border-dashed border-[#28bb8f]"
                           style={{ top: "28%" }}
                         />
                         <div className="pointer-events-none absolute right-[-4.5rem] top-[28%] -translate-y-1/2 text-sm font-medium text-[#28bb8f]">
                           {dimensions.head} in
-                        </div>
-                        <div className="absolute inset-x-0 bottom-0 bg-[#6d6d6d]/75 py-2 text-center text-sm text-white">
-                          Passport-Photo.online
                         </div>
                       </div>
                     </div>
