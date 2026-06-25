@@ -131,3 +131,17 @@
     @apply border-b border-[#e5e5e5];
   }
 }
+
+@keyframes photo-scan {
+  0%,
+  100% {
+    top: 12%;
+  }
+  50% {
+    top: 72%;
+  }
+}
+
+.photo-scan-bar {
+  animation: photo-scan 2.4s ease-in-out infinite;
+}

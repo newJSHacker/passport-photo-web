@@ -58,10 +58,18 @@ export interface PhotoJob {
   error: string | null;
 }
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? "/api/backend";
+const API_BASE = (process.env.NEXT_PUBLIC_API_URL ?? "/api/backend").replace(
+  /\/+$/,
+  "",
+);
+
+function joinApiPath(path: string): string {
+  const normalizedPath = path.startsWith("/") ? path : `/${path}`;
+  return `${API_BASE}${normalizedPath}`;
+}
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
-  const response = await fetch(`${API_BASE}${path}`, {
+  const response = await fetch(joinApiPath(path), {
     ...init,
     headers: {
       ...(init?.headers ?? {}),
@@ -157,5 +165,10 @@ export async function fetchPhotoJobs(params?: {
 export function photoFileUrl(path: string | null): string | null {
   if (!path) return null;
   if (path.startsWith("http")) return path;
-  return `${API_BASE.replace("/api/backend", "")}${path.replace("/api/v1", "/api/backend")}`;
+  const webOrigin = API_BASE.replace(/\/api\/backend$/, "").replace(
+    /\/api\/v1$/,
+    "",
+  );
+  const backendPath = path.replace("/api/v1", "/api/backend");
+  return `${webOrigin}${backendPath}`;
 }

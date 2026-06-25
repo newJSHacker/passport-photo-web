@@ -20,7 +20,6 @@ import {
 import {
   getCreateAfterImage,
   getCreateBeforeImage,
-  getCreateProcessingImage,
   getCreateResultImage,
   getDocumentCoverImage,
 } from "@/lib/create-images";
@@ -75,6 +74,33 @@ export default function CreatePage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [activeProcessingStep, setActiveProcessingStep] = useState(0);
+  const [uploadPreviewUrl, setUploadPreviewUrl] = useState<string | null>(null);
+  const uploadPreviewUrlRef = useRef<string | null>(null);
+
+  function setUploadPreview(file: File) {
+    if (uploadPreviewUrlRef.current) {
+      URL.revokeObjectURL(uploadPreviewUrlRef.current);
+    }
+    const previewUrl = URL.createObjectURL(file);
+    uploadPreviewUrlRef.current = previewUrl;
+    setUploadPreviewUrl(previewUrl);
+  }
+
+  function clearUploadPreview() {
+    if (uploadPreviewUrlRef.current) {
+      URL.revokeObjectURL(uploadPreviewUrlRef.current);
+      uploadPreviewUrlRef.current = null;
+    }
+    setUploadPreviewUrl(null);
+  }
+
+  useEffect(() => {
+    return () => {
+      if (uploadPreviewUrlRef.current) {
+        URL.revokeObjectURL(uploadPreviewUrlRef.current);
+      }
+    };
+  }, []);
 
   useEffect(() => {
     fetchDocuments()
@@ -100,6 +126,7 @@ export default function CreatePage() {
     if (!selectedDocumentId) return;
     setError(null);
     setActiveProcessingStep(0);
+    setUploadPreview(file);
     setStep("processing");
     setJob(null);
     setLoading(true);
@@ -122,6 +149,7 @@ export default function CreatePage() {
       setStep("result");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Processing failed");
+      clearUploadPreview();
       setStep("document");
     } finally {
       setLoading(false);
@@ -131,6 +159,7 @@ export default function CreatePage() {
   function handleRetake() {
     setJob(null);
     setActiveProcessingStep(0);
+    clearUploadPreview();
     setStep("document");
     setError(null);
     window.setTimeout(() => inputRef.current?.click(), 0);
@@ -141,7 +170,6 @@ export default function CreatePage() {
   const processedUrl = photoFileUrl(job?.processed_url ?? null);
   const beforeImage = getCreateBeforeImage(430);
   const afterImage = getCreateAfterImage(selectedDocumentId, 430);
-  const processingImage = getCreateProcessingImage(750);
   const resultImage =
     processedUrl ?? getCreateResultImage(430);
   const documentCoverImage = getDocumentCoverImage(selectedDocumentId, 160);
@@ -422,18 +450,18 @@ export default function CreatePage() {
               <section className="flex justify-center lg:justify-end">
                 <div className="relative w-full max-w-[560px] rounded-[34px] bg-[#ececef] p-4 shadow-[0_24px_50px_rgba(0,0,0,0.08)] sm:p-5">
                   <div className="relative overflow-hidden rounded-[24px] bg-white">
-                    <OnlineCmsImage
-                      src={processingImage}
-                      alt="Uploaded photo preview"
-                      className="aspect-[4/3] w-full object-cover"
-                    />
-                    <div className="pointer-events-none absolute inset-x-0 top-1/2 h-[74px] -translate-y-1/2 bg-[linear-gradient(90deg,rgba(108,235,200,0),rgba(108,235,200,0.55),rgba(108,235,200,0))]" />
-                    <div className="pointer-events-none absolute inset-x-0 top-1/2 h-px -translate-y-1/2 border-t border-dashed border-[#28bb8f]/70" />
-                  </div>
-                  <div className="absolute right-7 top-7 flex h-[52px] w-[52px] items-center justify-center rounded-full bg-white/80">
-                    <span className="flex h-10 w-10 items-center justify-center rounded-full bg-[#ff3c53] text-2xl leading-none text-white">
-                      ×
-                    </span>
+                    {uploadPreviewUrl ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={uploadPreviewUrl}
+                        alt="Your uploaded photo"
+                        className="aspect-[4/3] w-full object-cover"
+                      />
+                    ) : null}
+                    <div className="photo-scan-bar pointer-events-none absolute inset-x-0 h-[74px] -translate-y-1/2">
+                      <div className="h-full w-full bg-[linear-gradient(90deg,rgba(108,235,200,0),rgba(108,235,200,0.55),rgba(108,235,200,0))]" />
+                      <div className="absolute inset-x-0 top-1/2 h-px -translate-y-1/2 border-t border-dashed border-[#28bb8f]/80" />
+                    </div>
                   </div>
                 </div>
               </section>
