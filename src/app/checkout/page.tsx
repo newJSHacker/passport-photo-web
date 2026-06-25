@@ -21,6 +21,7 @@ import {
   createCheckoutSession,
   fetchCheckoutPricing,
   fetchDocument,
+  getCheckoutReturnUrls,
   getPhotoJob,
   photoFileUrl,
   type CheckoutPricingOption,
@@ -158,12 +159,15 @@ function CheckoutPageContent() {
     setError(null);
 
     try {
+      const returnUrls = getCheckoutReturnUrls();
       const result = await createCheckoutSession({
         photo_job_id: activeJobId,
         email: email.trim(),
         delivery_type: deliveryType,
         print_copies: deliveryType === "print" ? printCopies : undefined,
         addons: Array.from(selectedAddons),
+        success_url: returnUrls.success_url,
+        cancel_url: returnUrls.cancel_url,
       });
       saveCheckoutOrder({
         order_id: result.order_id,

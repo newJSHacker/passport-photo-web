@@ -204,6 +204,26 @@ export interface CreateCheckoutSessionPayload {
   delivery_type: "digital" | "print";
   print_copies?: 2 | 4 | 6;
   addons?: ("expert_check" | "photo_retouching")[];
+  success_url?: string;
+  cancel_url?: string;
+}
+
+export function getCheckoutReturnUrls(): {
+  success_url: string;
+  cancel_url: string;
+} {
+  const origin =
+    typeof window !== "undefined"
+      ? window.location.origin
+      : (process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000").replace(
+          /\/+$/,
+          "",
+        );
+
+  return {
+    success_url: `${origin}/checkout/success`,
+    cancel_url: `${origin}/checkout/cancel`,
+  };
 }
 
 export interface CreateCheckoutSessionResult {
