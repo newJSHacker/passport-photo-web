@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -12,7 +12,7 @@ import {
   type Order,
 } from "@/lib/api";
 
-export default function CheckoutSuccessPage() {
+function CheckoutSuccessContent() {
   const searchParams = useSearchParams();
   const orderId = searchParams.get("order_id");
   const sessionId = searchParams.get("session_id");
@@ -29,14 +29,18 @@ export default function CheckoutSuccessPage() {
       return;
     }
 
+    const activeOrderId = orderId;
+    const activeSessionId = sessionId;
     let cancelled = false;
 
     async function load() {
       try {
-        const data = orderId
-          ? await getOrder(orderId)
-          : await getOrderBySession(sessionId!);
-        if (cancelled) return;
+        const data = activeOrderId
+          ? await getOrder(activeOrderId)
+          : activeSessionId
+            ? await getOrderBySession(activeSessionId)
+            : null;
+        if (!data || cancelled) return;
         if (data.status !== "paid") {
           setError("Payment is still processing. Please refresh in a moment.");
           return;
@@ -102,5 +106,21 @@ export default function CheckoutSuccessPage() {
         </Button>
       </div>
     </div>
+  );
+}
+
+export default function CheckoutSuccessPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="bg-page py-10 md:py-14">
+          <div className="container-main max-w-lg text-center">
+            <p className="text-grey">Loading…</p>
+          </div>
+        </div>
+      }
+    >
+      <CheckoutSuccessContent />
+    </Suspense>
   );
 }

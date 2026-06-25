@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   CheckoutAddonsStep,
@@ -38,7 +38,7 @@ function formatSizeLabel(document: DocumentSpecDetail | null): string {
   return `${w}×${h} in`;
 }
 
-export default function CheckoutPage() {
+function CheckoutPageContent() {
   const searchParams = useSearchParams();
   const jobId = searchParams.get("job");
 
@@ -62,11 +62,12 @@ export default function CheckoutPage() {
       return;
     }
 
+    const activeJobId = jobId;
     let cancelled = false;
 
     async function load() {
       try {
-        const jobData = await getPhotoJob(jobId);
+        const jobData = await getPhotoJob(activeJobId);
         if (cancelled) return;
         if (jobData.status !== "completed") {
           setError("Your photo is not ready yet. Please finish processing first.");
@@ -151,12 +152,13 @@ export default function CheckoutPage() {
   async function handlePay() {
     if (!jobId || !email.trim()) return;
 
+    const activeJobId = jobId;
     setSubmitting(true);
     setError(null);
 
     try {
       const result = await createCheckoutSession({
-        photo_job_id: jobId,
+        photo_job_id: activeJobId,
         email: email.trim(),
         delivery_type: deliveryType,
         print_copies: deliveryType === "print" ? printCopies : undefined,
@@ -287,5 +289,21 @@ export default function CheckoutPage() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function CheckoutPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="bg-page py-8 md:py-12">
+          <div className="container-main">
+            <p className="text-grey">Loading…</p>
+          </div>
+        </div>
+      }
+    >
+      <CheckoutPageContent />
+    </Suspense>
   );
 }

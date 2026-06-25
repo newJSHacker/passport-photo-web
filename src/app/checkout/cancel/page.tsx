@@ -2,9 +2,10 @@
 
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
+import { Suspense } from "react";
 import { Button } from "@/components/ui/button";
 
-export default function CheckoutCancelPage() {
+function CheckoutCancelContent() {
   const searchParams = useSearchParams();
   const jobId = searchParams.get("job_id");
   const checkoutHref = jobId ? `/checkout?job=${jobId}` : "/create";
@@ -26,5 +27,21 @@ export default function CheckoutCancelPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function CheckoutCancelPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="bg-page py-10 md:py-14">
+          <div className="container-main max-w-lg text-center">
+            <p className="text-grey">Loading…</p>
+          </div>
+        </div>
+      }
+    >
+      <CheckoutCancelContent />
+    </Suspense>
   );
 }
